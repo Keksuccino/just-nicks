@@ -2,6 +2,10 @@ package de.keksuccino.justnicks.platform.services;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 public interface IPlatformHelper {
@@ -52,5 +56,7 @@ public interface IPlatformHelper {
     default String getEnvironmentName() {
         return isDevelopmentEnvironment() ? "development" : "production";
     }
+
+    boolean hasPermission(@Nullable ServerPlayer player, @NotNull String permission);
 
 }

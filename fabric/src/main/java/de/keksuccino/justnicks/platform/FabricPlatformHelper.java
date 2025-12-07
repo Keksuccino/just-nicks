@@ -2,11 +2,16 @@ package de.keksuccino.justnicks.platform;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import de.keksuccino.justnicks.platform.services.IPlatformHelper;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +74,12 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public InputConstants.Key getKeyMappingKey(KeyMapping keyMapping) {
         return KeyBindingHelper.getBoundKeyOf(keyMapping);
+    }
+
+    @Override
+    public boolean hasPermission(@Nullable ServerPlayer player, @NotNull String permission) {
+        if (player == null) return false;
+        return Permissions.check(player, permission);
     }
 
 }

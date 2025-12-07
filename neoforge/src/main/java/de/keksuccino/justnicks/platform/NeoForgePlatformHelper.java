@@ -2,18 +2,29 @@ package de.keksuccino.justnicks.platform;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import de.keksuccino.justnicks.platform.services.IPlatformHelper;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public String getPlatformName() {
@@ -71,6 +82,19 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public InputConstants.Key getKeyMappingKey(KeyMapping keyMapping) {
         return keyMapping.getKey();
+    }
+
+    @Override
+    public boolean hasPermission(@Nullable ServerPlayer player, @NotNull String permission) {
+        if (player == null) return false;
+        try {
+            LuckPerms luckPerms = LuckPermsProvider.get();
+            User user = luckPerms.getPlayerAdapter(ServerPlayer.class).getUser(player);
+            return user.getCachedData().getPermissionData().checkPermission(permission).asBoolean();
+        } catch (Exception ex) {
+            LOGGER.error("[JUST NICKS] Failed to check player permissions on NeoForge!", ex);
+        }
+        return false;
     }
 
 }
