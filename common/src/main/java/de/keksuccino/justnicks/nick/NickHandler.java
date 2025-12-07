@@ -2,7 +2,12 @@ package de.keksuccino.justnicks.nick;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.scores.PlayerTeam;
@@ -10,18 +15,22 @@ import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundResetScorePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 /**
  * Holds runtime nick mappings and utility helpers for applying them.
@@ -140,5 +149,42 @@ public final class NickHandler {
 
             playerList.broadcastAll(new ClientboundSetScorePacket(nick, objective.getName(), value, display, numberFormat));
         });
+
+        respawnEntityForViewers(player);
     }
+
+    private static void respawnEntityForViewers(@NotNull ServerPlayer player) {
+        ServerLevel level = player.level();
+        List<ServerPlayer> viewers = level.getChunkSource().chunkMap.getPlayers(player.chunkPosition(), false);
+        if (viewers.isEmpty()) {
+            return;
+        }
+
+        ServerEntity serverEntity = new ServerEntity(level, player, player.getType().updateInterval(), player.getType().trackDeltas(), NOOP_SYNCHRONIZER);
+        ClientboundRemoveEntitiesPacket removePacket = new ClientboundRemoveEntitiesPacket(player.getId());
+
+        for (ServerPlayer viewer : viewers) {
+            if (viewer == player) {
+                continue; // Avoid replacing the client's local player instance.
+            }
+            viewer.connection.send(removePacket);
+            List<Packet<? super ClientGamePacketListener>> bundle = new ArrayList<>();
+            serverEntity.sendPairingData(viewer, bundle::add);
+            viewer.connection.send(new ClientboundBundlePacket(bundle));
+        }
+    }
+
+    private static final ServerEntity.Synchronizer NOOP_SYNCHRONIZER = new ServerEntity.Synchronizer() {
+        @Override
+        public void sendToTrackingPlayers(Packet<? super ClientGamePacketListener> packet) {
+        }
+
+        @Override
+        public void sendToTrackingPlayersAndSelf(Packet<? super ClientGamePacketListener> packet) {
+        }
+
+        @Override
+        public void sendToTrackingPlayersFiltered(Packet<? super ClientGamePacketListener> packet, Predicate<ServerPlayer> predicate) {
+        }
+    };
 }
