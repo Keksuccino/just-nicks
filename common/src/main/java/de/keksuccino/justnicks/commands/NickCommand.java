@@ -25,7 +25,8 @@ public class NickCommand {
         if (player == null) return 0;
         String nickname = Nicknames.randomNickname();
         NickHandler.applyNick(player, nickname);
-        source.sendSuccess(() -> Component.translatable("commands.justnicks.nick.applied_random", nickname), true);
+        // Only tell the executing player; don't broadcast to others (vanilla clients would see the raw key).
+        source.sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.nick.applied_random", "Your nickname is now %s.", nickname), false);
         return 1;
     }
 
@@ -33,7 +34,7 @@ public class NickCommand {
         ServerPlayer player = getPlayerOrFail(source);
         if (player == null) return 0;
         NickHandler.applyNick(player, nickname);
-        source.sendSuccess(() -> Component.translatable("commands.justnicks.nick.applied_custom", nickname), true);
+        source.sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.nick.applied_custom", "Your nickname is now %s.", nickname), false);
         return 1;
     }
 

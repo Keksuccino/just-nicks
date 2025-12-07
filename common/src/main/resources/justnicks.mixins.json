@@ -5,6 +5,8 @@
   "client": [
   ],
   "server": [
+  ],
+  "mixins": [
     "server.AccessorClientboundPlayerInfoUpdatePacketEntry",
     "server.AccessorClientboundSetPlayerTeamPacket",
     "server.AccessorServerGamePacketListenerImpl",
@@ -12,8 +14,6 @@
     "server.MixinPlayer",
     "server.MixinPlayerList",
     "server.MixinServerCommonPacketListenerImpl"
-  ],
-  "mixins": [
   ],
   "injectors": {
     "defaultRequire": 1

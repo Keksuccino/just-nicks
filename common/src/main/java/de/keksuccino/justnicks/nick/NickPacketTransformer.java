@@ -110,8 +110,7 @@ public final class NickPacketTransformer {
 
             GameProfile original = entry.profile();
             if (original == null) continue;
-            GameProfile newProfile = new GameProfile(original.getId(), nickEntry.nickname());
-            newProfile.getProperties().putAll(original.getProperties());
+            GameProfile newProfile = new GameProfile(original.id(), nickEntry.nickname(), original.properties());
 
             Component display = NickHandler.getDecoratedDisplayName(target);
 

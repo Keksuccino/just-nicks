@@ -61,13 +61,13 @@ public final class NickHandler {
             throw new IllegalArgumentException("Nickname must not be empty");
         }
 
-        NickEntry previous = NICKED.put(player.getUUID(), new NickEntry(player.getUUID(), player.getGameProfile().getName(), nickname));
+        NickEntry previous = NICKED.put(player.getUUID(), new NickEntry(player.getUUID(), player.getGameProfile().name(), nickname));
         if (previous != null) {
             NAME_TO_UUID.remove(previous.nickname().toLowerCase(Locale.ROOT));
         }
         NAME_TO_UUID.put(nickname.toLowerCase(Locale.ROOT), player.getUUID());
 
-        refreshNickForAll(player);
+        refreshNickForAll(player, previous != null ? previous.nickname() : null);
     }
 
     @Nullable
@@ -82,7 +82,7 @@ public final class NickHandler {
      */
     public static String getDisplayName(@NotNull ServerPlayer player) {
         String nick = getNickname(player);
-        return nick == null ? player.getGameProfile().getName() : nick;
+        return nick == null ? player.getGameProfile().name() : nick;
     }
 
     public static Component getDecoratedDisplayName(@NotNull ServerPlayer player) {
@@ -95,8 +95,8 @@ public final class NickHandler {
     /**
      * Broadcast packets so every client knows the nicked name and receives updated scoreboard entries.
      */
-    public static void refreshNickForAll(@NotNull ServerPlayer player) {
-        MinecraftServer server = player.server;
+    public static void refreshNickForAll(@NotNull ServerPlayer player, @Nullable String oldNickname) {
+        MinecraftServer server = player.level().getServer();
         PlayerList playerList = server.getPlayerList();
 
         // Re-send player info (remove then add with new profile name)
@@ -117,6 +117,9 @@ public final class NickHandler {
         String realName = player.getScoreboardName();
         String nick = getDisplayName(player);
         if (team != null) {
+            if (oldNickname != null && !oldNickname.equals(nick)) {
+                playerList.broadcastAll(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, oldNickname, ClientboundSetPlayerTeamPacket.Action.REMOVE));
+            }
             playerList.broadcastAll(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, realName, ClientboundSetPlayerTeamPacket.Action.REMOVE));
             playerList.broadcastAll(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, nick, ClientboundSetPlayerTeamPacket.Action.ADD));
         }
@@ -124,6 +127,9 @@ public final class NickHandler {
         // Move scoreboard entries client-side: remove old owner and re-add with nick, preserving values & formatting.
         ScoreHolder holder = ScoreHolder.forNameOnly(realName);
         scoreboard.listPlayerScores(holder).forEach((objective, value) -> {
+            if (oldNickname != null && !oldNickname.equals(nick)) {
+                playerList.broadcastAll(new ClientboundResetScorePacket(oldNickname, objective.getName()));
+            }
             // remove old entry from clients
             playerList.broadcastAll(new ClientboundResetScorePacket(realName, objective.getName()));
 

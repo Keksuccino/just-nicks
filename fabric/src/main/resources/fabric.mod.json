@@ -18,10 +18,7 @@
       "de.keksuccino.justnicks.JustNicksFabric"
     ],
     "client": [],
-    "server": [],
-    "modmenu": [
-      "de.keksuccino.justnicks.ModMenuIntegration"
-    ]
+    "server": []
   },
   "mixins": [
     "${mod_id}.mixins.json",
