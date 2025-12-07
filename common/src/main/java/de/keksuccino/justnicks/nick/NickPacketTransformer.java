@@ -18,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.Suggestion;
 import org.jetbrains.annotations.NotNull;
+import com.mojang.authlib.properties.PropertyMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -110,7 +111,11 @@ public final class NickPacketTransformer {
 
             GameProfile original = entry.profile();
             if (original == null) continue;
-            GameProfile newProfile = new GameProfile(original.id(), nickEntry.nickname(), original.properties());
+            PropertyMap properties = NickHandler.copyProperties(original.properties());
+            if (nickEntry.appliedSkin() != null) {
+                properties = NickHandler.copyWithSkin(properties, nickEntry.appliedSkin());
+            }
+            GameProfile newProfile = new GameProfile(original.id(), nickEntry.nickname(), properties);
 
             Component display = NickHandler.getDecoratedDisplayName(target);
 

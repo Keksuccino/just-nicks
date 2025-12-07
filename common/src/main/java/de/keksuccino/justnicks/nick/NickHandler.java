@@ -1,6 +1,9 @@
 package de.keksuccino.justnicks.nick;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -28,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
@@ -85,18 +89,26 @@ public final class NickHandler {
     }
 
     public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname) {
+        applyNick(player, nickname, null);
+    }
+
+    public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname, @Nullable SignedSkin skin) {
         nickname = nickname.trim();
         if (nickname.isEmpty()) {
             throw new IllegalArgumentException("Nickname must not be empty");
         }
 
-        NickEntry previous = NICKED.put(player.getUUID(), new NickEntry(player.getUUID(), player.getGameProfile().name(), nickname));
-        if (previous != null) {
-            NAME_TO_UUID.remove(previous.nickname().toLowerCase(Locale.ROOT));
+        NickEntry previous = NICKED.get(player.getUUID());
+        PropertyMap originalProperties = previous != null ? previous.originalProperties() : copyProperties(player.getGameProfile().properties());
+
+        NickEntry newEntry = new NickEntry(player.getUUID(), player.getGameProfile().name(), nickname, originalProperties, skin);
+        NickEntry replaced = NICKED.put(player.getUUID(), newEntry);
+        if (replaced != null) {
+            NAME_TO_UUID.remove(replaced.nickname().toLowerCase(Locale.ROOT));
         }
         NAME_TO_UUID.put(nickname.toLowerCase(Locale.ROOT), player.getUUID());
 
-        refreshNickForAll(player, previous != null ? previous.nickname() : null);
+        refreshNickForAll(player, replaced != null ? replaced.nickname() : null);
     }
 
     @Nullable
@@ -231,6 +243,30 @@ public final class NickHandler {
             serverEntity.sendPairingData(viewer, bundle::add);
             viewer.connection.send(new ClientboundBundlePacket(bundle));
         }
+    }
+
+    static PropertyMap copyProperties(PropertyMap source) {
+        ArrayListMultimap<String, Property> multimap = ArrayListMultimap.create();
+        for (String key : source.keySet()) {
+            Collection<Property> properties = source.get(key);
+            for (Property property : properties) {
+                multimap.put(key, new Property(property.name(), property.value(), property.signature()));
+            }
+        }
+        return new PropertyMap(multimap); // PropertyMap copies to immutable internally
+    }
+
+    static PropertyMap copyWithSkin(PropertyMap base, SignedSkin skin) {
+        ArrayListMultimap<String, Property> multimap = ArrayListMultimap.create();
+        for (String key : base.keySet()) {
+            if ("textures".equals(key)) continue; // we'll replace below
+            Collection<Property> properties = base.get(key);
+            for (Property property : properties) {
+                multimap.put(key, new Property(property.name(), property.value(), property.signature()));
+            }
+        }
+        multimap.put("textures", skin.asProperty());
+        return new PropertyMap(multimap);
     }
 
     private static final ServerEntity.Synchronizer NOOP_SYNCHRONIZER = new ServerEntity.Synchronizer() {
