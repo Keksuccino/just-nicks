@@ -1,3 +1,6 @@
 {
-  "justnicks.options": "Just Nicks Options"
+  "justnicks.options": "Just Nicks Options",
+  "commands.justnicks.nick.applied_random": "Your nickname is now %s.",
+  "commands.justnicks.nick.applied_custom": "Your nickname is now %s.",
+  "commands.justnicks.nick.only_player": "Only players can use this command."
 }

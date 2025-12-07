@@ -1,6 +1,7 @@
 package de.keksuccino.justnicks;
 
 import de.keksuccino.justnicks.commands.Commands;
+import de.keksuccino.justnicks.nick.NickHandler;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
@@ -14,6 +15,7 @@ public class JustNicksFabricServerEvents {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 //            PacketHandler.sendHandshakeToClient(handler.getPlayer());
         });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> NickHandler.clear(handler.getPlayer()));
 
     }
 

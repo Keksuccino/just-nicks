@@ -3,8 +3,15 @@
   "package": "de.keksuccino.justnicks.mixin.mixins.common",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "client.IMixinKeyMapping_Category",
-    "client.MixinAbstractClientPlayer"
+  ],
+  "server": [
+    "server.AccessorClientboundPlayerInfoUpdatePacketEntry",
+    "server.AccessorClientboundSetPlayerTeamPacket",
+    "server.AccessorServerGamePacketListenerImpl",
+    "server.MixinCommandSourceStack",
+    "server.MixinPlayer",
+    "server.MixinPlayerList",
+    "server.MixinServerCommonPacketListenerImpl"
   ],
   "mixins": [
   ],
