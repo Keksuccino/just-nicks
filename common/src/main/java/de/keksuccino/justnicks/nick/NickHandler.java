@@ -10,9 +10,12 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.ScoreAccess;
 import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.ReadOnlyScoreInfo;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
@@ -22,6 +25,8 @@ import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -140,6 +145,7 @@ public final class NickHandler {
         PlayerTeam team = scoreboard.getPlayersTeam(player.getScoreboardName());
         String realName = player.getScoreboardName();
         String nick = getDisplayName(player);
+        migrateScores(scoreboard, realName, oldNickname, nick);
         if (team != null) {
             if (oldNickname != null && !oldNickname.equals(nick)) {
                 playerList.broadcastAll(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, oldNickname, ClientboundSetPlayerTeamPacket.Action.REMOVE));
@@ -149,15 +155,14 @@ public final class NickHandler {
         }
 
         // Move scoreboard entries client-side: remove old owner and re-add with nick, preserving values & formatting.
-        ScoreHolder holder = ScoreHolder.forNameOnly(realName);
-        scoreboard.listPlayerScores(holder).forEach((objective, value) -> {
+        ScoreHolder nickHolder = ScoreHolder.forNameOnly(nick);
+        scoreboard.listPlayerScores(nickHolder).forEach((objective, value) -> {
             if (oldNickname != null && !oldNickname.equals(nick)) {
                 playerList.broadcastAll(new ClientboundResetScorePacket(oldNickname, objective.getName()));
             }
-            // remove old entry from clients
             playerList.broadcastAll(new ClientboundResetScorePacket(realName, objective.getName()));
 
-            var info = scoreboard.getPlayerScoreInfo(holder, objective);
+            var info = scoreboard.getPlayerScoreInfo(nickHolder, objective);
             Optional<Component> display = info instanceof net.minecraft.world.scores.Score score ? Optional.ofNullable(score.display()) : Optional.empty();
             Optional<net.minecraft.network.chat.numbers.NumberFormat> numberFormat =
                     info != null ? Optional.ofNullable(info.numberFormat()) : Optional.empty();
@@ -166,6 +171,45 @@ public final class NickHandler {
         });
 
         respawnEntityForViewers(player);
+    }
+
+    private static void migrateScores(@NotNull Scoreboard scoreboard, @NotNull String realName, @Nullable String oldNickname, @NotNull String nick) {
+        moveScores(scoreboard, realName, nick);
+        if (oldNickname != null) {
+            moveScores(scoreboard, oldNickname, nick);
+        }
+    }
+
+    private static void moveScores(@NotNull Scoreboard scoreboard, @NotNull String fromName, @NotNull String toName) {
+        if (fromName.equals(toName)) {
+            return;
+        }
+
+        ScoreHolder fromHolder = ScoreHolder.forNameOnly(fromName);
+        ScoreHolder toHolder = ScoreHolder.forNameOnly(toName);
+
+        Object2IntMap<Objective> scores = new Object2IntOpenHashMap<>(scoreboard.listPlayerScores(fromHolder));
+        scores.forEach((objective, value) -> {
+            ScoreAccess newScore = scoreboard.getOrCreatePlayerScore(toHolder, objective, true);
+            newScore.set(value);
+
+            ReadOnlyScoreInfo info = scoreboard.getPlayerScoreInfo(fromHolder, objective);
+            if (info != null) {
+                if (info instanceof net.minecraft.world.scores.Score score) {
+                    newScore.display(score.display());
+                    newScore.numberFormatOverride(score.numberFormat());
+                } else {
+                    newScore.numberFormatOverride(info.numberFormat());
+                }
+                if (info.isLocked()) {
+                    newScore.lock();
+                } else {
+                    newScore.unlock();
+                }
+            }
+
+            scoreboard.resetSinglePlayerScore(fromHolder, objective);
+        });
     }
 
     private static void respawnEntityForViewers(@NotNull ServerPlayer player) {
