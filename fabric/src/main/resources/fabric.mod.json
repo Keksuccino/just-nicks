@@ -15,12 +15,12 @@
   "icon": "${mod_id}_logo_128x128.png",
   "entrypoints": {
     "main": [
-      "de.keksuccino.justzoom.JustZoomFabric"
+      "de.keksuccino.justnicks.JustNicksFabric"
     ],
     "client": [],
     "server": [],
     "modmenu": [
-      "de.keksuccino.justzoom.ModMenuIntegration"
+      "de.keksuccino.justnicks.ModMenuIntegration"
     ]
   },
   "mixins": [

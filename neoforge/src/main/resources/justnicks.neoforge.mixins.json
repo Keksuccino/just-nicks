@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "de.keksuccino.justnicks.mixin.mixins.neoforge",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+    "client.MixinMinecraft"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "justnicks.refmap.json",
+  "plugin": "de.keksuccino.justnicks.mixin.JustNicksMixinPlugin",
+  "minVersion": "0.8"
+}
