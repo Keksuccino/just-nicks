@@ -2,5 +2,8 @@
   "justnicks.options": "Just Nicks Options",
   "commands.justnicks.nick.applied_random": "Your nickname is now %s.",
   "commands.justnicks.nick.applied_custom": "Your nickname is now %s.",
-  "commands.justnicks.nick.only_player": "Only players can use this command."
+  "commands.justnicks.nick.only_player": "Only players can use this command.",
+  "commands.justnicks.unnick.cleared": "Your real name has been restored.",
+  "commands.justnicks.unnick.not_nicked": "You are not nicked.",
+  "commands.justnicks.unnick.only_player": "Only players can use this command."
 }

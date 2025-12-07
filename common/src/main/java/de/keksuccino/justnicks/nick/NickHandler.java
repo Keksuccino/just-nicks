@@ -64,6 +64,21 @@ public final class NickHandler {
         }
     }
 
+    /**
+     * Removes the nickname and re-syncs the player using their real identity.
+     *
+     * @return true if a nick was cleared, false if the player was already using their real name.
+     */
+    public static boolean removeNick(@NotNull ServerPlayer player) {
+        NickEntry removed = NICKED.remove(player.getUUID());
+        if (removed == null) {
+            return false;
+        }
+        NAME_TO_UUID.remove(removed.nickname().toLowerCase(Locale.ROOT));
+        refreshNickForAll(player, removed.nickname());
+        return true;
+    }
+
     public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname) {
         nickname = nickname.trim();
         if (nickname.isEmpty()) {

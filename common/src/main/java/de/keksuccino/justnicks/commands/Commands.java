@@ -10,6 +10,7 @@ public class Commands {
 
         CloseGuiScreenCommand.register(dispatcher);
         NickCommand.register(dispatcher);
+        UnnickCommand.register(dispatcher);
 
     }
 
