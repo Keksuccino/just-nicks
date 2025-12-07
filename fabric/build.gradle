@@ -22,13 +22,10 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     implementation project(":common")
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
-    include(implementation 'com.github.Keksuccino:japng:0.5.3')
-    include(implementation 'com.github.rtyley:animated-gif-lib-for-java:animated-gif-lib-1.7')
-    modImplementation "maven.modrinth:melody:1.0.14-1.21.10-fabric"
+    modImplementation "maven.modrinth:fabric-permissions-api:0.5.0"
+    modImplementation "maven.modrinth:luckperms:v5.5.17-fabric"
     modImplementation "maven.modrinth:konkrete:1.9.13-1.21.10-fabric"
     modImplementation "maven.modrinth:modmenu:16.0.0-rc.1"
-    modCompileOnly "it.crystalnest:fancy-entity-renderer-fabric:$fer_mc_version-$fer_version"
-    modImplementation "de.keksuccino:mcef-fabric:2.1.7-1.21.10"
 
 }
 
