@@ -2,18 +2,30 @@ package de.keksuccino.justnicks.util;
 
 import de.keksuccino.justnicks.platform.Services;
 import net.minecraft.client.Minecraft;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class GameDirectoryUtils {
 
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public static File getGameDirectory() {
-        if (Services.PLATFORM.isOnClient()) {
-            return Minecraft.getInstance().gameDirectory;
-        } else {
-            return new File("");
+        try {
+            if (Services.PLATFORM.isOnClient()) {
+                return Minecraft.getInstance().gameDirectory;
+            } else {
+                Path path = Paths.get("server.properties");
+                return path.toAbsolutePath().getParent().toFile();
+            }
+        } catch (Exception ex) {
+            LOGGER.error("[JUST NICKS] Failed to get game directory!", ex);
         }
+        return new File("");
     }
 
     public static boolean isExistingGameDirectoryPath(@NotNull String path) {
@@ -34,8 +46,8 @@ public class GameDirectoryUtils {
                 if (path.startsWith("/")) path = path.substring(1);
                 return gameDir + "/" + path;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            LOGGER.error("[JUST NICKS] Failed to build absolute game directory path for input path: " + path, ex);
         }
         return path;
     }

@@ -4,12 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "client.IMixinKeyMapping_Category",
-    "client.MixinAbstractClientPlayer",
-    "client.MixinCameraType",
-    "client.MixinGameRenderer",
-    "client.MixinKeyMapping_Category",
-    "client.MixinMouseHandler",
-    "client.MixinPauseScreen"
+    "client.MixinAbstractClientPlayer"
   ],
   "mixins": [
   ],

@@ -17,6 +17,8 @@ public class JustNicksFabric implements ModInitializer {
 
         }
 
+        JustNicksFabricServerEvents.registerAll();
+
     }
 
 }

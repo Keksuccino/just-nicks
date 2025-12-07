@@ -20,6 +20,8 @@ public class JustNicksNeoForge {
 
         }
 
+        JustNicksNeoForgeServerEvents.registerAll();
+
     }
 
     @SubscribeEvent
