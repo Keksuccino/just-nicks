@@ -83,15 +83,19 @@ public class NickHandler {
             return false;
         }
         NAME_TO_UUID.remove(removed.nickname().toLowerCase(Locale.ROOT));
-        refreshNickForAll(player, removed.nickname());
+        refreshNickForAll(player, removed.nickname(), true);
         return true;
     }
 
     public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname) {
-        applyNick(player, nickname, null);
+        applyNick(player, nickname, null, true);
     }
 
     public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname, @Nullable SignedSkin skin) {
+        applyNick(player, nickname, skin, true);
+    }
+
+    public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname, @Nullable SignedSkin skin, boolean refreshSelf) {
         nickname = nickname.trim();
         if (nickname.isEmpty()) {
             throw new IllegalArgumentException("Nickname must not be empty");
@@ -107,7 +111,7 @@ public class NickHandler {
         }
         NAME_TO_UUID.put(nickname.toLowerCase(Locale.ROOT), player.getUUID());
 
-        refreshNickForAll(player, replaced != null ? replaced.nickname() : null);
+        refreshNickForAll(player, replaced != null ? replaced.nickname() : null, refreshSelf);
     }
 
     @Nullable
@@ -135,7 +139,7 @@ public class NickHandler {
     /**
      * Broadcast packets so every client knows the nicked name and receives updated scoreboard entries.
      */
-    public static void refreshNickForAll(@NotNull ServerPlayer player, @Nullable String oldNickname) {
+    public static void refreshNickForAll(@NotNull ServerPlayer player, @Nullable String oldNickname, boolean refreshSelf) {
         MinecraftServer server = player.level().getServer();
         PlayerList playerList = server.getPlayerList();
 
@@ -181,7 +185,9 @@ public class NickHandler {
             playerList.broadcastAll(new ClientboundSetScorePacket(nick, objective.getName(), value, display, numberFormat));
         });
 
-        respawnEntityForSelf(player);
+        if (refreshSelf) {
+            respawnEntityForSelf(player);
+        }
         respawnEntityForViewers(player);
     }
 
