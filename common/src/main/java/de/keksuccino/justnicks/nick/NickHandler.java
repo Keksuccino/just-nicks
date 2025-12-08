@@ -46,6 +46,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -192,6 +193,7 @@ public class NickHandler {
             playerList.broadcastAll(new ClientboundSetScorePacket(nick, objective.getName(), value, display, numberFormat));
         });
 
+        respawnEntityForSelf(player);
         respawnEntityForViewers(player);
     }
 
@@ -234,15 +236,29 @@ public class NickHandler {
         });
     }
 
-    private static void respawnEntityForViewers(@NotNull ServerPlayer player) {
+    private static void respawnEntityForSelf(@NotNull ServerPlayer player) {
 
         ServerLevel level = player.level();
 
+        // Cache position and body rotation so we can restore them after the dummy menu closes
+        final double cachedX = player.getX();
+        final double cachedY = player.getY();
+        final double cachedZ = player.getZ();
+        final float cachedYaw = player.getYRot();
+        final float cachedPitch = player.getXRot();
+
         player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(level), ClientboundRespawnPacket.KEEP_ALL_DATA));
-//        player.openDialog(Holder.direct(new NoticeDialog(new CommonDialogData(Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname.."), Optional.empty(), true, false, DialogAction.CLOSE, List.of(), List.of()), NoticeDialog.DEFAULT_ACTION)));
         player.openMenu(new SimpleMenuProvider((i, inventory, player1) -> new ChestMenu(MenuType.GENERIC_3x3, 2025, player.getInventory(), new SimpleContainer(0), 0), Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname..")));
-        //new ChestMenu(MenuType.GENERIC_3x3, 2025, player.getInventory(), new SimpleContainer(), 0)
-        player.level().getServer().execute(() -> player.connection.send(new ClientboundContainerClosePacket(2025)));
+        player.level().getServer().execute(() -> {
+            player.connection.send(new ClientboundContainerClosePacket(2025));
+            player.teleportTo(level, cachedX, cachedY, cachedZ, Set.of(), cachedYaw, cachedPitch, false);
+        });
+
+    }
+
+    private static void respawnEntityForViewers(@NotNull ServerPlayer player) {
+
+        ServerLevel level = player.level();
 
         List<ServerPlayer> viewers = level.getChunkSource().chunkMap.getPlayers(player.chunkPosition(), false);
         if (viewers.isEmpty()) {
