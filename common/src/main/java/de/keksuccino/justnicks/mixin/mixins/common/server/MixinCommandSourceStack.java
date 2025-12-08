@@ -16,11 +16,9 @@ public abstract class MixinCommandSourceStack {
     @Shadow public abstract MinecraftServer getServer();
 
     @Inject(method = "getOnlinePlayerNames", at = @At("HEAD"), cancellable = true)
-    private void head_getOnlinePlayerNames_JustNicks(CallbackInfoReturnable<java.util.Collection<String>> cir) {
-        var list = this.getServer().getPlayerList().getPlayers().stream()
-                .map(NickHandler::getDisplayName)
-                .collect(Collectors.toList());
-        cir.setReturnValue(list);
+    private void head_getOnlinePlayerNames_JustNicks(CallbackInfoReturnable<java.util.Collection<String>> info) {
+        var list = this.getServer().getPlayerList().getPlayers().stream().map(NickHandler::getDisplayName).collect(Collectors.toList());
+        info.setReturnValue(list);
     }
 
 }

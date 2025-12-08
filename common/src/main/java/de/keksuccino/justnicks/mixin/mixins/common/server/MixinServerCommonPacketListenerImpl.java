@@ -31,7 +31,7 @@ public abstract class MixinServerCommonPacketListenerImpl {
     @Unique
     private Packet<?> transformIfGameListener_JustNicks(Packet<?> packet) {
         if (((Object)this) instanceof ServerGamePacketListenerImpl gameListener) {
-            ServerPlayer player = ((AccessorServerGamePacketListenerImpl) gameListener).getPlayer_JustNicks();
+            ServerPlayer player = ((AccessorServerGamePacketListenerImpl) gameListener).get_player_JustNicks();
             return NickPacketTransformer.transform(packet, player, this.server);
         }
         return packet;

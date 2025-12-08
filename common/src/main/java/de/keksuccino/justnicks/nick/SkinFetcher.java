@@ -74,4 +74,5 @@ public class SkinFetcher {
 
         return Optional.empty();
     }
+
 }

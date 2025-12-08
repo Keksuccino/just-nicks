@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinPlayer {
 
     @Inject(method = "getDisplayName", at = @At("HEAD"), cancellable = true)
-    private void head_getDisplayName_JustNicks(CallbackInfoReturnable<Component> cir) {
+    private void head_getDisplayName_JustNicks(CallbackInfoReturnable<Component> info) {
         Player self = (Player) (Object) this;
         if (!(self instanceof ServerPlayer serverPlayer)) return;
         String nickname = NickHandler.getNickname(serverPlayer);
@@ -23,7 +23,7 @@ public abstract class MixinPlayer {
             Scoreboard scoreboard = serverPlayer.level().getScoreboard();
             PlayerTeam team = scoreboard.getPlayersTeam(serverPlayer.getScoreboardName());
             Component base = Component.literal(nickname);
-            cir.setReturnValue(PlayerTeam.formatNameForTeam(team, base));
+            info.setReturnValue(PlayerTeam.formatNameForTeam(team, base));
         }
     }
 

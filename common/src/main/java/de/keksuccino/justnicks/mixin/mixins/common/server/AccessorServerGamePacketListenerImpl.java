@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ServerGamePacketListenerImpl.class)
 public interface AccessorServerGamePacketListenerImpl {
 
-    @Accessor("player") ServerPlayer getPlayer_JustNicks();
+    @Accessor("player") ServerPlayer get_player_JustNicks();
 
 }

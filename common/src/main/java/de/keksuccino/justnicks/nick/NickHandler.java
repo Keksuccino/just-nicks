@@ -310,4 +310,5 @@ public class NickHandler {
         public void sendToTrackingPlayersFiltered(Packet<? super ClientGamePacketListener> packet, Predicate<ServerPlayer> predicate) {
         }
     };
+
 }

@@ -8,7 +8,6 @@ public class Commands {
 
     public static void registerAll(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
 
-        CloseGuiScreenCommand.register(dispatcher);
         NickCommand.register(dispatcher);
         UnnickCommand.register(dispatcher);
 

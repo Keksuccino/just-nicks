@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ClientboundPlayerInfoUpdatePacket.Entry.class)
 public interface AccessorClientboundPlayerInfoUpdatePacketEntry {
 
-    @Accessor("profile") @Mutable void setProfile(GameProfile profile);
+    @Accessor("profile") @Mutable void set_profile_JustNicks(GameProfile profile);
 
-    @Accessor("displayName") @Mutable void setDisplayName(Component displayName);
+    @Accessor("displayName") @Mutable void set_displayName_JustNicks(Component displayName);
 
 }

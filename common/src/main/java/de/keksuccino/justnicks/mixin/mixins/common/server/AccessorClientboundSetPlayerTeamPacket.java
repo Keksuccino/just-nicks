@@ -9,8 +9,6 @@ import java.util.Collection;
 @Mixin(ClientboundSetPlayerTeamPacket.class)
 public interface AccessorClientboundSetPlayerTeamPacket {
 
-    @Accessor("players") Collection<String> getPlayersInternal();
-
-    @Accessor("players") @Mutable void setPlayers(Collection<String> players);
+    @Accessor("players") @Mutable void set_players_JustNicks(Collection<String> players);
 
 }

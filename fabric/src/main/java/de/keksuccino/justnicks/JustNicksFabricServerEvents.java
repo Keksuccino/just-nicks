@@ -11,10 +11,6 @@ public class JustNicksFabricServerEvents {
 
         registerServerCommands();
 
-        // Handle join server stuff on server-side
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-//            PacketHandler.sendHandshakeToClient(handler.getPlayer());
-        });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> NickHandler.clear(handler.getPlayer()));
 
     }

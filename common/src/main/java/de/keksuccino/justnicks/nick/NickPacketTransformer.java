@@ -34,7 +34,7 @@ public class NickPacketTransformer {
     public static Packet<?> transform(Packet<?> packet, ServerPlayer viewer, MinecraftServer server) {
         NickEntry selfEntry = null;
         boolean keepSelfOriginal = false;
-        if (JustNicks.getOptions().showOriginalIdentityToSelfPlayer.getValue()) {
+        if (JustNicks.getOptions().showOriginalIdentityToSelf.getValue()) {
             selfEntry = NickHandler.getEntry(viewer.getUUID()).orElse(null);
             keepSelfOriginal = selfEntry != null;
         }
@@ -132,8 +132,8 @@ public class NickPacketTransformer {
             Component display = NickHandler.getDecoratedDisplayName(target);
 
             AccessorClientboundPlayerInfoUpdatePacketEntry accessor = (AccessorClientboundPlayerInfoUpdatePacketEntry) (Object) entry;
-            accessor.setProfile(newProfile);
-            accessor.setDisplayName(display);
+            accessor.set_profile_JustNicks(newProfile);
+            accessor.set_displayName_JustNicks(display);
         }
     }
 
@@ -144,7 +144,7 @@ public class NickPacketTransformer {
 
         List<String> rewritten = current.stream().map(name -> replaceName(name, server, selfEntry, keepSelfOriginal)).collect(Collectors.toList());
         if (!rewritten.equals(new ArrayList<>(current))) {
-            accessor.setPlayers(ImmutableList.copyOf(rewritten));
+            accessor.set_players_JustNicks(ImmutableList.copyOf(rewritten));
         }
     }
 

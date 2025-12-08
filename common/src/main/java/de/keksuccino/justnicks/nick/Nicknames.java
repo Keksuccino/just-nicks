@@ -57,4 +57,5 @@ public class Nicknames {
             return Collections.emptyList();
         }
     }
+
 }
