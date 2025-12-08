@@ -4,15 +4,28 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundClearDialogPacket;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dialog.*;
+import net.minecraft.server.dialog.body.DialogBodyTypes;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.ScoreAccess;
@@ -226,23 +239,10 @@ public class NickHandler {
         ServerLevel level = player.level();
 
         player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(level), ClientboundRespawnPacket.KEEP_ALL_DATA));
-        player.connection.send(new ClientboundOpenScreenPacket(2025, MenuType.GENERIC_3x3, Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname..")));
-        EXECUTOR.submit(() -> {
-           long start = System.currentTimeMillis();
-           while (true) {
-               long now = System.currentTimeMillis();
-               if ((start + 10000) < now) {
-                   LOGGER.warn("Dummy close task timed out!");
-                   break; // 10 second timeout
-               }
-               if (player.hasContainerOpen()) {
-                   LOGGER.info("Dummy container open! Closing now..");
-                   break; // dummy container open -> send close packet
-               }
-           }
-           LOGGER.info("Closing dummy menu for player..");
-           player.connection.send(new ClientboundContainerClosePacket(2025));
-        });
+//        player.openDialog(Holder.direct(new NoticeDialog(new CommonDialogData(Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname.."), Optional.empty(), true, false, DialogAction.CLOSE, List.of(), List.of()), NoticeDialog.DEFAULT_ACTION)));
+        player.openMenu(new SimpleMenuProvider((i, inventory, player1) -> new ChestMenu(MenuType.GENERIC_3x3, 2025, player.getInventory(), new SimpleContainer(0), 0), Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname..")));
+        //new ChestMenu(MenuType.GENERIC_3x3, 2025, player.getInventory(), new SimpleContainer(), 0)
+        player.level().getServer().execute(() -> player.connection.send(new ClientboundContainerClosePacket(2025)));
 
         List<ServerPlayer> viewers = level.getChunkSource().chunkMap.getPlayers(player.chunkPosition(), false);
         if (viewers.isEmpty()) {
