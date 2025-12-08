@@ -19,14 +19,11 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Loads the bundled pool of pre-fetched signed skins (assets/justnicks/skins.json).
  */
-public final class Skins {
+public class Skins {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String RESOURCE_PATH = "/assets/justnicks/skins.json";
     private static final List<SignedSkin> SKINS = loadSkins();
-
-    private Skins() {
-    }
 
     public static SignedSkin randomSkin() {
         if (SKINS.isEmpty()) {

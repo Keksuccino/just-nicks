@@ -19,15 +19,10 @@ import java.util.Optional;
 /**
  * Lightweight runtime fetcher that resolves a username to a signed skin via Mojang's APIs.
  */
-public final class SkinFetcher {
+public class SkinFetcher {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final HttpClient CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
-
-    private SkinFetcher() {
-    }
+    private static final HttpClient CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 
     public static Optional<SignedSkin> fetchByUsername(String username) {
         String trimmed = username == null ? "" : username.trim();

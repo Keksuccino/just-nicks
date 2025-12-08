@@ -27,10 +27,7 @@ import java.util.stream.Collectors;
 /**
  * Rewrites outbound packets so viewers see nicknames instead of real names.
  */
-public final class NickPacketTransformer {
-
-    private NickPacketTransformer() {
-    }
+public class NickPacketTransformer {
 
     public static Packet<?> transform(Packet<?> packet, ServerPlayer viewer, MinecraftServer server) {
         if (packet instanceof ClientboundBundlePacket bundle) {

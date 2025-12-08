@@ -6,28 +6,23 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBundlePacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.ScoreAccess;
 import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.ReadOnlyScoreInfo;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundResetScorePacket;
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
-import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
@@ -39,18 +34,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 
 /**
  * Holds runtime nick mappings and utility helpers for applying them.
  */
-public final class NickHandler {
+public class NickHandler {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private static final Map<UUID, NickEntry> NICKED = new ConcurrentHashMap<>();
     private static final Map<String, UUID> NAME_TO_UUID = new ConcurrentHashMap<>();
-
-    private NickHandler() {
-    }
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(20);
 
     public static boolean isNicked(@NotNull ServerPlayer player) {
         return NICKED.containsKey(player.getUUID());
@@ -225,7 +222,28 @@ public final class NickHandler {
     }
 
     private static void respawnEntityForViewers(@NotNull ServerPlayer player) {
+
         ServerLevel level = player.level();
+
+        player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(level), ClientboundRespawnPacket.KEEP_ALL_DATA));
+        player.connection.send(new ClientboundOpenScreenPacket(2025, MenuType.GENERIC_3x3, Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname..")));
+        EXECUTOR.submit(() -> {
+           long start = System.currentTimeMillis();
+           while (true) {
+               long now = System.currentTimeMillis();
+               if ((start + 10000) < now) {
+                   LOGGER.warn("Dummy close task timed out!");
+                   break; // 10 second timeout
+               }
+               if (player.hasContainerOpen()) {
+                   LOGGER.info("Dummy container open! Closing now..");
+                   break; // dummy container open -> send close packet
+               }
+           }
+           LOGGER.info("Closing dummy menu for player..");
+           player.connection.send(new ClientboundContainerClosePacket(2025));
+        });
+
         List<ServerPlayer> viewers = level.getChunkSource().chunkMap.getPlayers(player.chunkPosition(), false);
         if (viewers.isEmpty()) {
             return;

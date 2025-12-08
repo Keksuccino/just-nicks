@@ -18,14 +18,11 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Loads the bundled nickname pool (assets/justnicks/nicknames.json).
  */
-public final class Nicknames {
+public class Nicknames {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String RESOURCE_PATH = "/assets/justnicks/nicknames.json";
     private static final List<String> NICKNAMES = loadNicknames();
-
-    private Nicknames() {
-    }
 
     public static String randomNickname() {
         if (NICKNAMES.isEmpty()) {

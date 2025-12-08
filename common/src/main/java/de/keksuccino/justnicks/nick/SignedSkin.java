@@ -10,4 +10,5 @@ public record SignedSkin(String uuid, String name, String value, String signatur
     public Property asProperty() {
         return new Property("textures", this.value, this.signature);
     }
+
 }

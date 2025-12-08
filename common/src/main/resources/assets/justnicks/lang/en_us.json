@@ -5,5 +5,6 @@
   "commands.justnicks.nick.only_player": "Only players can use this command.",
   "commands.justnicks.unnick.cleared": "Your real name has been restored.",
   "commands.justnicks.unnick.not_nicked": "You are not nicked.",
-  "commands.justnicks.unnick.only_player": "Only players can use this command."
+  "commands.justnicks.unnick.only_player": "Only players can use this command.",
+  "justnicks.nick.applying_nick": "Applying nickname.."
 }
