@@ -1,9 +1,9 @@
 package de.keksuccino.justnicks.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import de.keksuccino.justnicks.JustNicks;
 import de.keksuccino.justnicks.nick.NickHandler;
 import de.keksuccino.justnicks.nick.Nicknames;
 import de.keksuccino.justnicks.nick.SignedSkin;
@@ -19,21 +19,18 @@ public class NickCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var base = Commands.literal("nick")
                 .requires(stack -> stack.hasPermission(4))
-                .executes(ctx -> applyRandom(ctx.getSource(), true))
-                .then(Commands.argument("refresh_self", BoolArgumentType.bool())
-                        .executes(ctx -> applyRandom(ctx.getSource(), BoolArgumentType.getBool(ctx, "refresh_self"))));
+                .executes(ctx -> applyRandom(ctx.getSource()));
 
         var custom = Commands.argument("name", StringArgumentType.word())
-                .executes(ctx -> applyCustom(ctx.getSource(), StringArgumentType.getString(ctx, "name"), true))
-                .then(Commands.argument("refresh_self", BoolArgumentType.bool())
-                        .executes(ctx -> applyCustom(ctx.getSource(), StringArgumentType.getString(ctx, "name"), BoolArgumentType.getBool(ctx, "refresh_self"))));
+                .executes(ctx -> applyCustom(ctx.getSource(), StringArgumentType.getString(ctx, "name")));
 
         dispatcher.register(base.then(custom));
     }
 
-    private static int applyRandom(CommandSourceStack source, boolean refreshSelf) throws CommandSyntaxException {
+    private static int applyRandom(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = getPlayerOrFail(source);
         if (player == null) return 0;
+        boolean refreshSelf = JustNicks.getOptions().refreshSelfOnNick.getValue();
         String nickname = Nicknames.randomNickname();
         SignedSkin skin = Skins.randomSkin();
         NickHandler.applyNick(player, nickname, skin, refreshSelf);
@@ -42,9 +39,10 @@ public class NickCommand {
         return 1;
     }
 
-    private static int applyCustom(CommandSourceStack source, String nickname, boolean refreshSelf) throws CommandSyntaxException {
+    private static int applyCustom(CommandSourceStack source, String nickname) throws CommandSyntaxException {
         ServerPlayer player = getPlayerOrFail(source);
         if (player == null) return 0;
+        boolean refreshSelf = JustNicks.getOptions().refreshSelfOnNick.getValue();
         SignedSkin skin = SkinFetcher.fetchByUsername(nickname).orElse(null);
         NickHandler.applyNick(player, nickname, skin, refreshSelf);
         source.sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.nick.applied_custom", "Your nickname is now %s.", nickname), false);
