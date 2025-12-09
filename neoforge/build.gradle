@@ -24,11 +24,17 @@ runs {
     client {
         workingDirectory project.file('../run_client')
         systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        dependencies {
+            runtime "org.xerial:sqlite-jdbc:3.45.3.0"
+        }
     }
     server {
         workingDirectory project.file('../run_server')
         systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         arguments.add('--nogui')
+        dependencies {
+            runtime "org.xerial:sqlite-jdbc:3.45.3.0"
+        }
     }
 }
 
@@ -54,6 +60,9 @@ dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
     implementation "maven.modrinth:luckperms:v5.5.17-neoforge"
 	implementation "maven.modrinth:konkrete:1.9.13-1.21.10-neoforge"
+    implementation(jarJar("org.xerial:sqlite-jdbc:3.45.3.0")) {
+        jarJar.ranged(it, "[3.45.3.0,)")
+    }
 	compileOnly project(":common")
 }
 

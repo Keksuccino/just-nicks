@@ -11,6 +11,7 @@ public class JustNicksFabricServerEvents {
 
         registerServerCommands();
 
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> NickHandler.restorePersistent(handler.getPlayer()));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> NickHandler.clear(handler.getPlayer()));
 
     }

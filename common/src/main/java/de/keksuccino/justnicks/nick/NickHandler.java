@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import de.keksuccino.justnicks.JustNicks;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
@@ -47,7 +48,11 @@ import java.util.function.Predicate;
 public class NickHandler {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
+    private static final ServerEntity.Synchronizer NOOP_SYNCHRONIZER = new ServerEntity.Synchronizer() {
+        @Override public void sendToTrackingPlayers(Packet<? super ClientGamePacketListener> packet) {}
+        @Override public void sendToTrackingPlayersAndSelf(Packet<? super ClientGamePacketListener> packet) {}
+        @Override public void sendToTrackingPlayersFiltered(Packet<? super ClientGamePacketListener> packet, Predicate<ServerPlayer> predicate) {}
+    };
     private static final Map<UUID, NickEntry> NICKED = new ConcurrentHashMap<>();
     private static final Map<String, UUID> NAME_TO_UUID = new ConcurrentHashMap<>();
 
@@ -77,22 +82,15 @@ public class NickHandler {
      *
      * @return true if a nick was cleared, false if the player was already using their real name.
      */
-    public static boolean removeNick(@NotNull ServerPlayer player) {
+    public static boolean removeNick(@NotNull ServerPlayer player, boolean refreshSelf) {
         NickEntry removed = NICKED.remove(player.getUUID());
         if (removed == null) {
             return false;
         }
         NAME_TO_UUID.remove(removed.nickname().toLowerCase(Locale.ROOT));
-        refreshNickForAll(player, removed.nickname(), true);
+        maybeDelete(removed.uuid());
+        refreshNickForAll(player, removed.nickname(), refreshSelf);
         return true;
-    }
-
-    public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname) {
-        applyNick(player, nickname, null, true);
-    }
-
-    public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname, @Nullable SignedSkin skin) {
-        applyNick(player, nickname, skin, true);
     }
 
     public static void applyNick(@NotNull ServerPlayer player, @NotNull String nickname, @Nullable SignedSkin skin, boolean refreshSelf) {
@@ -111,6 +109,7 @@ public class NickHandler {
         }
         NAME_TO_UUID.put(nickname.toLowerCase(Locale.ROOT), player.getUUID());
 
+        maybePersist(newEntry);
         refreshNickForAll(player, replaced != null ? replaced.nickname() : null, refreshSelf);
     }
 
@@ -119,6 +118,22 @@ public class NickHandler {
         UUID uuid = NAME_TO_UUID.get(nickname.toLowerCase(Locale.ROOT));
         if (uuid == null) return null;
         return server.getPlayerList().getPlayer(uuid);
+    }
+
+    /**
+     * Restore a stored nick for the given player when persistence is enabled.
+     */
+    public static void restorePersistent(@NotNull ServerPlayer player) {
+        if (!JustNicks.getOptions().persistentNicks.getValue()) {
+            return;
+        }
+        if (isNicked(player)) {
+            return;
+        }
+        PersistentNickStore.load(player.getUUID()).ifPresent(stored -> {
+            boolean refreshSelf = JustNicks.getOptions().refreshSelfOnNick.getValue();
+            applyNick(player, stored.nickname(), stored.skin(), refreshSelf);
+        });
     }
 
     /**
@@ -241,6 +256,7 @@ public class NickHandler {
         final float cachedYaw = player.getYRot();
         final float cachedPitch = player.getXRot();
 
+        // This is a hacky way to override the never closing "Loading terrain" screen that opens when soft-respawning the player
         player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(level), ClientboundRespawnPacket.KEEP_ALL_DATA));
         player.openMenu(new SimpleMenuProvider((i, inventory, player1) -> new ChestMenu(MenuType.GENERIC_3x3, 2025, player.getInventory(), new SimpleContainer(0), 0), Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname..")));
         player.level().getServer().execute(() -> {
@@ -264,7 +280,7 @@ public class NickHandler {
 
         for (ServerPlayer viewer : viewers) {
             if (viewer == player) {
-                continue; // Avoid replacing the client's local player instance.
+                continue; // Avoid replacing the client's local player instance
             }
             viewer.connection.send(removePacket);
             List<Packet<? super ClientGamePacketListener>> bundle = new ArrayList<>();
@@ -297,18 +313,18 @@ public class NickHandler {
         return new PropertyMap(multimap);
     }
 
-    private static final ServerEntity.Synchronizer NOOP_SYNCHRONIZER = new ServerEntity.Synchronizer() {
-        @Override
-        public void sendToTrackingPlayers(Packet<? super ClientGamePacketListener> packet) {
+    private static void maybePersist(@NotNull NickEntry entry) {
+        if (!JustNicks.getOptions().persistentNicks.getValue()) {
+            return;
         }
+        PersistentNickStore.save(entry.uuid(), entry.realName(), entry.nickname(), entry.appliedSkin());
+    }
 
-        @Override
-        public void sendToTrackingPlayersAndSelf(Packet<? super ClientGamePacketListener> packet) {
+    private static void maybeDelete(@NotNull UUID uuid) {
+        if (!JustNicks.getOptions().persistentNicks.getValue()) {
+            return;
         }
-
-        @Override
-        public void sendToTrackingPlayersFiltered(Packet<? super ClientGamePacketListener> packet, Predicate<ServerPlayer> predicate) {
-        }
-    };
+        PersistentNickStore.delete(uuid);
+    }
 
 }

@@ -7,5 +7,7 @@
   "commands.justnicks.unnick.not_nicked": "You are not nicked.",
   "commands.justnicks.unnick.only_player": "Only players can use this command.",
   "justnicks.nick.applying_nick": "Applying nickname..",
-  "justnicks.commands.general.no_permission": "You don't have permission to use this command."
+  "justnicks.commands.general.no_permission": "You don't have permission to use this command.",
+  "justnicks.options.persistent_nicks": "Persistent nicknames",
+  "justnicks.options.persistent_nicks.desc": "Keep your nickname after the server restarts."
 }

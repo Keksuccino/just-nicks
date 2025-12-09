@@ -2,6 +2,7 @@ package de.keksuccino.justnicks.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import de.keksuccino.justnicks.JustNicks;
 import de.keksuccino.justnicks.nick.NickHandler;
 import de.keksuccino.justnicks.util.permission.Permission;
 import de.keksuccino.justnicks.util.permission.PermissionUtil;
@@ -29,7 +30,7 @@ public class UnnickCommand {
             return 0;
         }
 
-        boolean removed = NickHandler.removeNick(player);
+        boolean removed = NickHandler.removeNick(player, JustNicks.getOptions().refreshSelfOnNick.getValue());
         if (removed) {
             source.sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.unnick.cleared", "Your real name has been restored."), false);
             return 1;
