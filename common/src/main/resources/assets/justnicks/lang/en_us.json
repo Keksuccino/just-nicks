@@ -9,5 +9,9 @@
   "justnicks.nick.applying_nick": "Applying nickname..",
   "justnicks.commands.general.no_permission": "You don't have permission to use this command.",
   "justnicks.options.persistent_nicks": "Persistent nicknames",
-  "justnicks.options.persistent_nicks.desc": "Keep your nickname after the server restarts."
+  "justnicks.options.persistent_nicks.desc": "Keep your nickname after the server restarts.",
+  "justnicks.options.persistent_nicks_remote_url": "Remote nick API URL",
+  "justnicks.options.persistent_nicks_remote_url.desc": "Use a non-placeholder URL to sync nicks with an online database instead of the local file.",
+  "justnicks.options.persistent_nicks_remote_token": "Remote nick API token",
+  "justnicks.options.persistent_nicks_remote_token.desc": "Bearer token for the remote nick API."
 }
