@@ -1,3 +1,5 @@
+<a href="https://discord.gg/rhayah27GC"><img src="https://img.shields.io/discord/704163135787106365?style=flat&label=Discord&labelColor=%234260f5&color=%2382aeff" /></a> <a href="https://paypal.me/TimSchroeter"><img src="https://img.shields.io/badge/Donate%20via%20PayPal-%233d91ff?style=flat" /></a> <a href="https://www.patreon.com/keksuccino"><img src="https://img.shields.io/badge/Support%20me%20on%20Patreon-%23ff9b3d?style=flat" /></a>
+
 # About
 
 Just Nicks is a simple **server-side** mod to "nick" players, which means it anonymizes them by giving them a random nickname and skin.
@@ -35,3 +37,14 @@ Remote payload fields: `uuid`, `real_name`, `nickname`, optional `skin_uuid`, `s
 Just Nicks © Copyright 2025 Keksuccino.
 Just Nicks is licenced under DSMSLv3.
 Please read LICENSE.md for more information about the license.
+
+# Server Needed?
+
+Looking to play Minecraft with friends but setting up a server is just too time-consuming?<br>
+No worries! Simply rent a pre-configured server and start playing _in a snap_.
+
+Just click the image below and use code **[keksuccino](https://bisecthosting.com/keksuccino)** to enjoy a **25% discount** on your first month! You can also click the code itself if your ad blocker hides the banner.
+
+<br>
+
+<a href="https://tinyurl.com/bisectkeks"><img src="https://www.bisecthosting.com/partners/custom-banners/f5dd9194-01d8-4ce3-9b6a-a85327d975b1.png" /></a>
