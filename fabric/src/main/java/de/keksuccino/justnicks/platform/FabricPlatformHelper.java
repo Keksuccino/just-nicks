@@ -2,6 +2,7 @@ package de.keksuccino.justnicks.platform;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import de.keksuccino.justnicks.platform.services.IPlatformHelper;
+import de.keksuccino.justnicks.util.permission.Permission;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -77,9 +78,9 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public boolean hasPermission(@Nullable ServerPlayer player, @NotNull String permission) {
+    public boolean hasPermission(@Nullable ServerPlayer player, @NotNull Permission permission) {
         if (player == null) return false;
-        return Permissions.check(player, permission);
+        return Permissions.check(player, permission.getPermission());
     }
 
 }

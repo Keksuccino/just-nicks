@@ -1,6 +1,7 @@
 package de.keksuccino.justnicks.platform.services;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import de.keksuccino.justnicks.util.permission.Permission;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +58,6 @@ public interface IPlatformHelper {
         return isDevelopmentEnvironment() ? "development" : "production";
     }
 
-    boolean hasPermission(@Nullable ServerPlayer player, @NotNull String permission);
+    boolean hasPermission(@Nullable ServerPlayer player, @NotNull Permission permission);
 
 }

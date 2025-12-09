@@ -7,6 +7,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 
 public class JustNicksNeoForgeServerEvents {
 
@@ -26,6 +27,11 @@ public class JustNicksNeoForgeServerEvents {
         if (e.getEntity() instanceof ServerPlayer p) {
             NickHandler.clear(p);
         }
+    }
+
+    @SubscribeEvent
+    public void onRegisterPermissions(PermissionGatherEvent.Nodes e) {
+        JustNicksNeoForgePermissions.registerAll(e);
     }
 
 }

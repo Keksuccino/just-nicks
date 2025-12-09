@@ -9,6 +9,8 @@ import de.keksuccino.justnicks.nick.Nicknames;
 import de.keksuccino.justnicks.nick.SignedSkin;
 import de.keksuccino.justnicks.nick.SkinFetcher;
 import de.keksuccino.justnicks.nick.Skins;
+import de.keksuccino.justnicks.util.permission.Permission;
+import de.keksuccino.justnicks.util.permission.PermissionUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -18,7 +20,6 @@ public class NickCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var base = Commands.literal("nick")
-                .requires(stack -> stack.hasPermission(4))
                 .executes(ctx -> applyRandom(ctx.getSource()));
 
         var custom = Commands.argument("name", StringArgumentType.word())
@@ -28,6 +29,10 @@ public class NickCommand {
     }
 
     private static int applyRandom(CommandSourceStack source) throws CommandSyntaxException {
+        if (!PermissionUtil.hasPermission(source, Permission.NICK)) {
+            source.sendFailure(Component.translatableWithFallback("justnicks.commands.general.no_permission", "You don't have permission to use this command."));
+            return 0;
+        }
         ServerPlayer player = getPlayerOrFail(source);
         if (player == null) return 0;
         boolean refreshSelf = JustNicks.getOptions().refreshSelfOnNick.getValue();
@@ -40,6 +45,10 @@ public class NickCommand {
     }
 
     private static int applyCustom(CommandSourceStack source, String nickname) throws CommandSyntaxException {
+        if (!PermissionUtil.hasPermission(source, Permission.NICK)) {
+            source.sendFailure(Component.translatableWithFallback("justnicks.commands.general.no_permission", "You don't have permission to use this command."));
+            return 0;
+        }
         ServerPlayer player = getPlayerOrFail(source);
         if (player == null) return 0;
         boolean refreshSelf = JustNicks.getOptions().refreshSelfOnNick.getValue();
