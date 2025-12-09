@@ -64,17 +64,17 @@ public class OptionsCommand {
         refreshEntries();
         OptionEntry entry = findEntry(optionKey);
         if (entry == null) {
-            ctx.getSource().sendFailure(Component.translatableWithFallback("commands.justnicks.options.unknown", "Unknown option: %s", optionKey));
+            ctx.getSource().sendFailure(Component.translatableWithFallback("justnicks.commands.options.unknown", "Unknown option: %s", optionKey));
             return 0;
         }
 
         boolean success = applyValue(entry.option(), rawValue);
         if (!success) {
-            ctx.getSource().sendFailure(Component.translatableWithFallback("commands.justnicks.options.invalid_value", "Invalid value for %s: %s", optionKey, rawValue));
+            ctx.getSource().sendFailure(Component.translatableWithFallback("justnicks.commands.options.invalid_value", "Invalid value for %s: %s", optionKey, rawValue));
             return 0;
         }
 
-        ctx.getSource().sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.options.updated", "Set %s to %s.", optionKey, rawValue), false);
+        ctx.getSource().sendSuccess(() -> Component.translatableWithFallback("justnicks.commands.options.updated", "Set %s to %s.", optionKey, rawValue), false);
         return 1;
     }
 

@@ -258,7 +258,7 @@ public class NickHandler {
 
         // This is a hacky way to override the never closing "Loading terrain" screen that opens when soft-respawning the player
         player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(level), ClientboundRespawnPacket.KEEP_ALL_DATA));
-        player.openMenu(new SimpleMenuProvider((i, inventory, player1) -> new ChestMenu(MenuType.GENERIC_3x3, 2025, player.getInventory(), new SimpleContainer(0), 0), Component.translatableWithFallback("justnicks.nick.applying_nick", "Applying nickname..")));
+        player.openMenu(new SimpleMenuProvider((i, inventory, player1) -> new ChestMenu(MenuType.GENERIC_3x3, 2025, player.getInventory(), new SimpleContainer(0), 0), Component.translatableWithFallback("justnicks.commands.nick.applying_nick", "Applying nickname..")));
         player.level().getServer().execute(() -> {
             player.connection.send(new ClientboundContainerClosePacket(2025));
             player.teleportTo(level, cachedX, cachedY, cachedZ, Set.of(), cachedYaw, cachedPitch, false);

@@ -32,11 +32,11 @@ public class UnnickCommand {
 
         boolean removed = NickHandler.removeNick(player, JustNicks.getOptions().refreshSelfOnNick.getValue());
         if (removed) {
-            source.sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.unnick.cleared", "Your real name has been restored."), false);
+            source.sendSuccess(() -> Component.translatableWithFallback("justnicks.commands.unnick.cleared", "Your real name has been restored."), false);
             return 1;
         }
 
-        source.sendFailure(Component.translatableWithFallback("commands.justnicks.unnick.not_nicked", "You are not nicked."));
+        source.sendFailure(Component.translatableWithFallback("justnicks.commands.unnick.not_nicked", "You are not nicked."));
         return 0;
 
     }
@@ -45,7 +45,7 @@ public class UnnickCommand {
         try {
             return source.getPlayerOrException();
         } catch (CommandSyntaxException ex) {
-            source.sendFailure(Component.translatableWithFallback("commands.justnicks.unnick.only_player", "Only players can use this command."));
+            source.sendFailure(Component.translatableWithFallback("justnicks.commands.unnick.only_player", "Only players can use this command."));
             return null;
         }
     }

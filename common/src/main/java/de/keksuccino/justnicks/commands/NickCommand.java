@@ -47,7 +47,7 @@ public class NickCommand {
         SignedSkin skin = Skins.randomSkin();
         NickHandler.applyNick(player, nickname, skin, refreshSelf);
         // Only tell the executing player; don't broadcast to others (vanilla clients would see the raw key).
-        source.sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.nick.applied_random", "Your nickname is now %s.", nickname), false);
+        source.sendSuccess(() -> Component.translatableWithFallback("justnicks.commands.nick.applied_random", "Your nickname is now %s.", nickname), false);
         return 1;
     }
 
@@ -61,7 +61,7 @@ public class NickCommand {
         boolean refreshSelf = JustNicks.getOptions().refreshSelfOnNick.getValue();
         SignedSkin skin = SkinFetcher.fetchByUsername(nickname).orElse(null);
         NickHandler.applyNick(player, nickname, skin, refreshSelf);
-        source.sendSuccess(() -> Component.translatableWithFallback("commands.justnicks.nick.applied_custom", "Your nickname is now %s.", nickname), false);
+        source.sendSuccess(() -> Component.translatableWithFallback("justnicks.commands.nick.applied_custom", "Your nickname is now %s.", nickname), false);
         return 1;
     }
 
@@ -69,7 +69,7 @@ public class NickCommand {
         try {
             return source.getPlayerOrException();
         } catch (CommandSyntaxException ex) {
-            source.sendFailure(Component.translatableWithFallback("commands.justnicks.nick.only_player", "Only players can use this command."));
+            source.sendFailure(Component.translatableWithFallback("justnicks.commands.nick.only_player", "Only players can use this command."));
             return null;
         }
     }
