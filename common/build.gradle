@@ -21,8 +21,6 @@ dependencies {
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.45.3.0'
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
-    modCompileOnly "maven.modrinth:fabric-permissions-api:0.5.0"
-    modCompileOnly "maven.modrinth:luckperms:v5.5.17-fabric"
     modCompileOnly "maven.modrinth:konkrete:1.9.13-1.21.10-fabric"
 }
 
