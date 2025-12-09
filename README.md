@@ -34,8 +34,8 @@ Remote payload fields: `uuid`, `real_name`, `nickname`, optional `skin_uuid`, `s
 
 # Copyright
 
-Just Nicks © Copyright 2025 Keksuccino.
-Just Nicks is licenced under DSMSLv3.
+Just Nicks © Copyright 2025 Keksuccino.<br>
+Just Nicks is licenced under DSMSLv3.<br>
 Please read LICENSE.md for more information about the license.
 
 # Server Needed?
