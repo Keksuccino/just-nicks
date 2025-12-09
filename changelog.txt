@@ -1,0 +1,3 @@
+CHANGELOG | JUST NICKS v1.0.0
+
+- Initial release
