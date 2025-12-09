@@ -3,6 +3,7 @@ package de.keksuccino.justnicks.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.keksuccino.justnicks.JustNicks;
 import de.keksuccino.justnicks.nick.NickHandler;
 import de.keksuccino.justnicks.nick.Nicknames;
@@ -18,11 +19,17 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class NickCommand {
 
+    private static final SuggestionProvider<CommandSourceStack> NAME_HINT = (ctx, builder) -> {
+        builder.suggest("Custom nickname, e.g. \"Knight\"");
+        return builder.buildFuture();
+    };
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var base = Commands.literal("nick")
                 .executes(ctx -> applyRandom(ctx.getSource()));
 
         var custom = Commands.argument("name", StringArgumentType.word())
+                .suggests(NAME_HINT)
                 .executes(ctx -> applyCustom(ctx.getSource(), StringArgumentType.getString(ctx, "name")));
 
         dispatcher.register(base.then(custom));

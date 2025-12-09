@@ -10,6 +10,7 @@ public class Commands {
 
         NickCommand.register(dispatcher);
         UnnickCommand.register(dispatcher);
+        OptionsCommand.register(dispatcher);
 
     }
 

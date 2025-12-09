@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 public enum Permission {
 
     NICK("permission.nick"),
-    UNNICK("permission.unnick");
+    UNNICK("permission.unnick"),
+    EDIT_OPTIONS("permission.edit_options");
 
     private static final String PREFIX = "justnicks";
 

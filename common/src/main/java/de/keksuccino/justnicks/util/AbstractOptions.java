@@ -2,9 +2,25 @@ package de.keksuccino.justnicks.util;
 
 import de.keksuccino.konkrete.config.Config;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractOptions {
+
+    private final List<Option<?>> options = new ArrayList<>();
+
+    @NotNull
+    protected <T> Option<T> register(@NotNull Option<T> option) {
+        this.options.add(option);
+        return option;
+    }
+
+    @NotNull
+    public List<Option<?>> getOptions() {
+        return new ArrayList<>(this.options);
+    }
 
     @SuppressWarnings("unused")
     public static class Option<T> {

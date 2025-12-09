@@ -13,5 +13,8 @@
   "justnicks.options.persistent_nicks_remote_url": "Remote nick API URL",
   "justnicks.options.persistent_nicks_remote_url.desc": "Use a non-placeholder URL to sync nicks with an online database instead of the local file.",
   "justnicks.options.persistent_nicks_remote_token": "Remote nick API token",
-  "justnicks.options.persistent_nicks_remote_token.desc": "Bearer token for the remote nick API."
+  "justnicks.options.persistent_nicks_remote_token.desc": "Bearer token for the remote nick API.",
+  "commands.justnicks.options.updated": "Set %s to %s.",
+  "commands.justnicks.options.unknown": "Unknown option: %s",
+  "commands.justnicks.options.invalid_value": "Invalid value for %s: %s"
 }

@@ -58,7 +58,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     implementation "net.neoforged:neoforge:${neoforge_version}"
-    implementation "maven.modrinth:luckperms:v5.5.17-neoforge"
 	implementation "maven.modrinth:konkrete:1.9.13-1.21.10-neoforge"
     implementation(jarJar("org.xerial:sqlite-jdbc:3.45.3.0")) {
         jarJar.ranged(it, "[3.45.3.0,)")

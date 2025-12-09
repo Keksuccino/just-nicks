@@ -11,16 +11,19 @@ public class JustNicksNeoForgePermissions {
 
     public static final PermissionNode<Boolean> NICK = new PermissionNode<>(Permission.NICK.getAsLocation(), PermissionTypes.BOOLEAN, (player, playerUUID, context) -> false);
     public static final PermissionNode<Boolean> UNNICK = new PermissionNode<>(Permission.UNNICK.getAsLocation(), PermissionTypes.BOOLEAN, (player, playerUUID, context) -> false);
+    public static final PermissionNode<Boolean> EDIT_OPTIONS = new PermissionNode<>(Permission.EDIT_OPTIONS.getAsLocation(), PermissionTypes.BOOLEAN, (player, playerUUID, context) -> false);
 
     public static void registerAll(PermissionGatherEvent.Nodes e) {
         e.addNodes(NICK);
         e.addNodes(UNNICK);
+        e.addNodes(EDIT_OPTIONS);
     }
 
     @Nullable
     public static PermissionNode<Boolean> resolveNode(@NotNull Permission permission) {
         if (permission == Permission.NICK) return NICK;
         if (permission == Permission.UNNICK) return UNNICK;
+        if (permission == Permission.EDIT_OPTIONS) return EDIT_OPTIONS;
         return null;
     }
 
